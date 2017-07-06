@@ -1,1 +1,1 @@
-an e-commerce platform
+This project consists of an e-commerce platform.

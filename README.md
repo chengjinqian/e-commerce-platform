@@ -1,1 +1,1 @@
-mmall_learning
+e-commerce platform

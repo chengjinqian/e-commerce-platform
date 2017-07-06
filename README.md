@@ -1,1 +1,1 @@
-e-commerce platform
+an e-commerce platform

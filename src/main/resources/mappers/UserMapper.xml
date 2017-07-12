@@ -154,12 +154,12 @@
 
   <select id="checkUserName" resultType="int" parameterType="string">
     select count(1) from mmall_user
-    where email = #{email}
+    where username = #{username}
   </select>
 
   <select id="checkUserEmail" resultType="int" parameterType="string">
     select count(1) from mmall_user
-    where username = #{username}
+    where email = #{email}
   </select>
 
   <select id="selectLogin" resultMap="BaseResultMap" parameterType="map">

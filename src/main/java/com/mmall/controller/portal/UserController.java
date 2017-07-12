@@ -115,14 +115,14 @@ public class UserController {
      * 检查答案是否正确
      *
      * @param username
-     * @param quesion
+     * @param question
      * @param answer
      * @return
      */
     @RequestMapping(value = "forget_check_answer.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> forgetCheckAnswer(String username, String quesion, String answer) {
-        return iUserService.checkAnswer(username, quesion, answer);
+    public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer) {
+        return iUserService.checkAnswer(username, question, answer);
     }
 
     /**

@@ -8,6 +8,8 @@ import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
 import com.mmall.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserMapper userMapper;
+
+
+    Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     // 登录功能
     public ServerResponse<User> login(String username, String password) {
@@ -120,9 +125,11 @@ public class UserServiceImpl implements IUserService {
     // 检查问题是否正确
     public ServerResponse<String> checkAnswer(String username, String quesion, String answer){
         int resultCount = userMapper.checkAnswer(username,quesion,answer);
+
         if(resultCount > 0){
             // 说明问题及问题答案是这个用户的，并且是正确的
             // 在校验问题回答是否正确的时候，将用户对应的token放入guava
+            //logger.info("resultCount = {}",resultCount);
             String forgetToken = UUID.randomUUID().toString();
             TokenCache.setKey(TokenCache.TOKEN_PREFIX + username, forgetToken);
             return ServerResponse.createBySuccess(forgetToken);
@@ -208,5 +215,19 @@ public class UserServiceImpl implements IUserService {
         }
         user.setPassword(StringUtils.EMPTY);
         return ServerResponse.createBySuccess(user);
+    }
+
+    // backend
+
+    /**
+     * 校验是否是管理员
+     * @param user
+     * @return
+     */
+    public ServerResponse checkAdminRole(User user){
+        if(user != null && user.getRole().intValue() == Const.Role.ROLE_ADMIN){
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }

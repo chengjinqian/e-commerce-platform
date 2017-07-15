@@ -93,6 +93,7 @@ public class CategoryServiceImpl implements ICategoryService{
             categorySet.add(category);
         }
         // 查找子节点，递归算法一定要有一个退出条件
+        // 退出条件就是categoryList == null
         List<Category> categoryList = categoryMapper.selectCategoryChildrenByParentId(categoryId);
         for(Category categoryItem : categoryList){
             findChildCategory(categorySet,categoryItem.getId());

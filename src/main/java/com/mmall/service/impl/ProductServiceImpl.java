@@ -16,12 +16,14 @@ import com.mmall.vo.ProductDetailVo;
 import com.mmall.vo.ProductListVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * Created by chengjinqian on 2017/7/15.
  */
+@Service("iProductService")
 public class ProductServiceImpl implements IProductService{
 
     @Autowired

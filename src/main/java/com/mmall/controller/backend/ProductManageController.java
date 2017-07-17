@@ -165,6 +165,13 @@ public class ProductManageController {
         }
     }
 
+    /**
+     * 普通文件上传
+     * @param session
+     * @param file
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "upload.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse upload(HttpSession session, @RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request) {
@@ -174,9 +181,11 @@ public class ProductManageController {
         }
 
         if (iUserService.checkAdminRole(user).isSuccess()) {
+            // 获得项目的绝对路径
             String path = request.getSession().getServletContext().getRealPath("upload");
+            // 上传文件后，返回文件最终名称
             String targetFileName = iFileService.upload(file, path);
-            String url = PropertiesUtil.getProperty("") + targetFileName;
+            String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
             Map fileMap = Maps.newHashMap();
             fileMap.put("uri", targetFileName);
             fileMap.put("url", url);
@@ -188,6 +197,15 @@ public class ProductManageController {
 
     }
 
+
+    /**
+     * 富文本文件上传
+     * @param session
+     * @param file
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "richtext_img_upload.do", method = RequestMethod.POST)
     @ResponseBody
     public Map richtextImgUpload(HttpSession session, @RequestParam(value = "upload_file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
@@ -208,7 +226,7 @@ public class ProductManageController {
                 return resultMap;
             }
 
-            String url = PropertiesUtil.getProperty("") + targetFileName;
+            String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
             resultMap.put("success",true);
             resultMap.put("msg","上传成功");
             resultMap.put("file_path",url);

@@ -52,7 +52,7 @@ public class FtpUtil {
             try {
                 ftpClient.changeWorkingDirectory(remotePath);
                 ftpClient.setBufferSize(1024);
-                ftpClient.setControlEncoding("utf-8");
+                ftpClient.setControlEncoding("UTF-8");
                 ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
                 ftpClient.enterLocalPassiveMode();
                 for(File fileItem : fileList){

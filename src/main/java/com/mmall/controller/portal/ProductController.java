@@ -32,6 +32,17 @@ public class ProductController {
         return iProductService.productDetail(productId);
     }
 
+    /**
+     * 前台搜索并排序展示
+     * @param categoryId
+     * @param keyword
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
+    @RequestMapping(value = "list.do",method = RequestMethod.POST)
+    @ResponseBody
     public ServerResponse<PageInfo> list(@RequestParam(value = "categoryId",required = false) Integer categoryId,
                                          @RequestParam(value = "keyword",required = false) String keyword,
                                          @RequestParam(value="pageNum",defaultValue = "1") int pageNum,

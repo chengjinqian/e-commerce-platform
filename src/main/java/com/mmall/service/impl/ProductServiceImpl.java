@@ -3,12 +3,14 @@ package com.mmall.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CategoryMapper;
 import com.mmall.dao.ProductMapper;
 import com.mmall.pojo.Category;
 import com.mmall.pojo.Product;
+import com.mmall.service.ICategoryService;
 import com.mmall.service.IProductService;
 import com.mmall.util.DateTimeUtil;
 import com.mmall.util.PropertiesUtil;
@@ -31,6 +33,9 @@ public class ProductServiceImpl implements IProductService{
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private ICategoryService iCategoryService;
 
     @Override
     public ServerResponse saveOrUpdateProduct(Product product) {
@@ -81,7 +86,7 @@ public class ProductServiceImpl implements IProductService{
         return ServerResponse.createBySuccessMessage("修改产品销售状态失败");
     }
 
-    public ServerResponse<ProductDetailVo> manageProdectDetail(Integer productId){
+    public ServerResponse<ProductDetailVo> manageProductDetail(Integer productId){
         if(productId == null){
             return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
@@ -127,7 +132,7 @@ public class ProductServiceImpl implements IProductService{
     }
 
 
-    public ServerResponse<PageInfo> getProdctList(int pageNum, int pageSize){
+    public ServerResponse<PageInfo> getProductList(int pageNum, int pageSize){
         // startPage
         // 填充自己的sql查询逻辑
         // pageHelper收尾
@@ -142,7 +147,6 @@ public class ProductServiceImpl implements IProductService{
         PageInfo pageResult = new PageInfo(productList);
         pageResult.setList(productListVos);
         return ServerResponse.createBySuccess(pageResult);
-
     }
 
     private ProductListVo assembleProductListVo(Product product){
@@ -175,5 +179,72 @@ public class ProductServiceImpl implements IProductService{
         PageInfo pageResult = new PageInfo(productList);
         pageResult.setList(productListVos);
         return ServerResponse.createBySuccess(pageResult);
+    }
+
+
+    public ServerResponse<ProductDetailVo> productDetail(Integer productId){
+
+        if(productId == null){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+
+        Product product = productMapper.selectByPrimaryKey(productId);
+        if(product == null){
+            return ServerResponse.createByErrorMessage("产品已下架或删除");
+        }
+
+        // 比后台多了一个判断是否下架
+
+        if(product.getStatus() != Const.ProductStatusEnum.ON_SALE.getCode()){
+            return ServerResponse.createByErrorMessage("产品已下架或删除");
+        }
+        // 返回一个VO对象 -- value object
+        ProductDetailVo productDetailVo = assembleProductDetailVo(product);
+        return ServerResponse.createBySuccess(productDetailVo);
+    }
+
+
+    public ServerResponse<PageInfo> getProductByKeywordCategory(Integer categoryId, String keyword, int pageNum, int pageSize, String orderBy){
+        if(categoryId == null && StringUtils.isBlank(keyword)){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+
+
+        if(StringUtils.isNotBlank(keyword)){
+            keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
+        }
+        List<Integer> categoryIds = Lists.newArrayList();
+        if(categoryId!=null){
+            Category category = categoryMapper.selectByPrimaryKey(categoryId);
+            if(category == null && StringUtils.isBlank(keyword)){
+                PageHelper.startPage(pageNum,pageSize);
+                List<ProductListVo> productListVos = Lists.newArrayList();
+                PageInfo pageInfo = new PageInfo(productListVos);
+                return ServerResponse.createBySuccess(pageInfo);
+            }
+            categoryIds = iCategoryService.selectCategoryAndChildrenById(category.getId()).getData();
+        }
+
+        PageHelper.startPage(pageNum,pageSize);
+        if(StringUtils.isNotBlank(orderBy)){
+            if(Const.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy)){
+                String[] orderByArray = orderBy.split("_");
+                PageHelper.orderBy(orderByArray[0]+" "+orderByArray[1]);
+            }
+        }
+
+        List<Product> productList = productMapper.selectByNameAndCategoryIds(StringUtils.isBlank(keyword)?null:keyword,categoryIds.size()==0?null:categoryIds);
+
+        List<ProductListVo> productListVos = Lists.newArrayList();
+
+        for(Product product : productList){
+            ProductListVo productListVo = assembleProductListVo(product);
+            productListVos.add(productListVo);
+        }
+
+        PageInfo pageInfo = new PageInfo(productList);
+        pageInfo.setList(productListVos);
+        return ServerResponse.createBySuccess(pageInfo);
+
     }
 }

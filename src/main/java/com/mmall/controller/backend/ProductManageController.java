@@ -107,7 +107,7 @@ public class ProductManageController {
 
         if (iUserService.checkAdminRole(user).isSuccess()) {
             // 填充业务
-            return iProductService.manageProdectDetail(productId);
+            return iProductService.manageProductDetail(productId);
         } else {
             return ServerResponse.createByErrorMessage("无权限操作");
         }
@@ -132,7 +132,7 @@ public class ProductManageController {
 
         if (iUserService.checkAdminRole(user).isSuccess()) {
             // 填充业务
-            return iProductService.getProdctList(pageNum, pageSize);
+            return iProductService.getProductList(pageNum, pageSize);
         } else {
             return ServerResponse.createByErrorMessage("无权限操作");
         }

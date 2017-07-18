@@ -46,6 +46,23 @@
       </if>
     </where>
   </select>
+
+  <select id="selectByNameAndCategoryIds" parameterType="map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from mmall_product
+    WHERE status = 1
+    <if test="keyword!=null">
+      and name like #{keyword}
+    </if>
+    <if test="categoryIds!=null">
+      and category_id in
+      <foreach collection="categoryIds" open="(" close=")" index="index" item="item" separator=",">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from mmall_product
     where id = #{id,jdbcType=INTEGER}

@@ -23,6 +23,7 @@ public class ProductDetailVo {
     // 图片服务器地址
     private String imageHost;
 
+    // 父分类id
     private Integer parentCategoroyId;
 
     public Integer getId() {

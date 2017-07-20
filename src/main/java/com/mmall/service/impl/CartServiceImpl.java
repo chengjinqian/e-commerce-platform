@@ -65,6 +65,7 @@ public class CartServiceImpl implements ICartService{
                         cartProductVo.setLimitQuantity(Const.Cart.LIMIT_NUM_SUCCESS);
                     }else{
                         buyLimitCount = product.getStock();
+                        // 这个字段是给前端用的
                         cartProductVo.setLimitQuantity(Const.Cart.LIMIT_NUM_FAIL);
                         //购物车中更新有效库存
                         Cart cartForQuantity = new Cart();
